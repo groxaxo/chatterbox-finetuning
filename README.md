@@ -183,7 +183,7 @@ METADATA_FILE = "metadata.csv"
 
 # Training
 BATCH_SIZE = 4         # Adjust based on your GPU VRAM
-LEARNING_RATE = 1e-4
+LEARNING_RATE = 5e-5
 NUM_EPOCHS = 50
 ```
 
