@@ -1,30 +1,32 @@
-import os
 from dataclasses import dataclass
 
 @dataclass
 class TrainConfig:
     # --- Paths ---
     # Directory where setup.py downloaded the files
-    model_dir: str = os.getenv("MODEL_DIR", "./pretrained_models")
+    model_dir: str = "./pretrained_models"
     
     # Path to your metadata CSV (Format: ID|RawText|NormText)
-    csv_path: str = os.getenv("CSV_PATH", "./MyTTSDataset/metadata.csv")
+    csv_path: str = "./MyTTSDataset/metadata.csv"
     
     # Directory containing WAV files
-    wav_dir: str = os.getenv("WAV_DIR", "./MyTTSDataset/wavs")
+    wav_dir: str = "./MyTTSDataset/wavs"
+    #wav_dir: str = "./FileBasedDataset"
     
-    preprocessed_dir = os.getenv("PREPROCESS_DATASET_DIR", "./MyTTSDataset/preprocess")
+    preprocessed_dir = "./MyTTSDataset/preprocess"
+    #preprocessed_dir = "./FileBasedDataset/preprocess"
     
     # Output directory for the finetuned model
-    output_dir: str = os.getenv("OUTPUT_DIR", "./chatterbox_output")
+    output_dir: str = "./chatterbox_output"
 
     ljspeech = True
+    preprocess = True
 
     # --- Hyperparameters ---
     batch_size: int = 4         # Adjust based on VRAM (2, 4, 8)
     grad_accum: int = 2        # Effective Batch Size = Batch * Accum
     learning_rate: float = 5e-5 # T3 is sensitive, keep low
-    num_epochs: int = 200
+    num_epochs: int = 250
 
     # --- Constraints ---
     start_text_token = 255

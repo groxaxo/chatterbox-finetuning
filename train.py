@@ -73,10 +73,14 @@ def main():
 
     logger.info("Initializing Preprocess dataset...")
     
-    if cfg.ljspeech:
-        preprocess_dataset_ljspeech(cfg, tts_engine_new)
-    else:
-        preprocess_dataset_file_based(cfg, tts_engine_new)
+    if cfg.preprocess:
+        
+        if cfg.ljspeech:
+            preprocess_dataset_ljspeech(cfg, tts_engine_new)
+            
+        else:
+            preprocess_dataset_file_based(cfg, tts_engine_new)
+            
         
     # 5. DATASET & WRAPPER
     logger.info("Initializing Dataset...")
@@ -95,7 +99,7 @@ def main():
         save_steps=500,
         logging_strategy="epoch",
         remove_unused_columns=False, # Required for our custom wrapper
-        dataloader_num_workers=2,    
+        dataloader_num_workers=4,    
         report_to=["tensorboard"],
         fp16=True if torch.cuda.is_available() else False,
         save_total_limit=2

@@ -202,6 +202,14 @@ ljspeech = False
 
 ```
 
+If you have already done the preprocessing process once, set preprocess=False in the config file to avoid doing it again.
+```python
+# In src/config.py
+preprocess = False  
+
+```
+
+
 ### 3. Start Training
 ```bash
 python train.py

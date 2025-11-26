@@ -15,8 +15,8 @@ logger = setup_logger("ChatterboxInference")
 
 
 
-BASE_MODEL_DIR = os.getenv("MODEL_DIR", "./pretrained_models")
-FINETUNED_WEIGHTS = os.getenv("FINETUNED_WEIGHTS", "./chatterbox_output/t3_finetuned.safetensors")
+BASE_MODEL_DIR = "./pretrained_models"
+FINETUNED_WEIGHTS = "./chatterbox_output/t3_finetuned.safetensors"
 NEW_VOCAB_SIZE = 2454 # Must match the training vocab size
 
 
