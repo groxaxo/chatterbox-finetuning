@@ -4,15 +4,16 @@ import torch
 from transformers import Trainer, TrainingArguments
 from safetensors.torch import save_file
 
-# Internal Modules
 from src.config import TrainConfig
 from src.dataset import ChatterboxDataset, data_collator
 from src.model import resize_and_load_t3_weights, ChatterboxTrainerWrapper
 from src.preprocess_ljspeech import preprocess_dataset_ljspeech
 from src.preprocess_file_based import preprocess_dataset_file_based
+from src.preprocess_json import preprocess_dataset_json_based
 from src.utils import setup_logger, check_pretrained_models
 
-# Chatterbox Imports
+from src.inference_callback import InferenceCallback
+
 from src.chatterbox_.tts import ChatterboxTTS
 from src.chatterbox_.tts_turbo import ChatterboxTurboTTS
 from src.chatterbox_.models.t3.t3 import T3
@@ -108,9 +109,12 @@ def main():
         if cfg.ljspeech:
             preprocess_dataset_ljspeech(cfg, tts_engine_new)
             
+        elif cfg.json_format:
+            preprocess_dataset_json_based(cfg, tts_engine_new)
+            
         else:
             preprocess_dataset_file_based(cfg, tts_engine_new)
-            
+      
     else:
         logger.info("Skipping the preprocessing dataset step...")
             
@@ -118,6 +122,12 @@ def main():
     # 6. DATASET & WRAPPER
     logger.info("Initializing Dataset...")
     train_ds = ChatterboxDataset(cfg)
+    
+    
+    trainer_callbacks = []
+    if cfg.is_inference:
+        inference_cb = InferenceCallback(cfg)
+        trainer_callbacks.append(inference_cb)
     
     model_wrapper = ChatterboxTrainerWrapper(tts_engine_new.t3)
 
@@ -134,7 +144,8 @@ def main():
         remove_unused_columns=False, # Required for our custom wrapper
         dataloader_num_workers=4,    
         report_to=["tensorboard"],
-        fp16=True if torch.cuda.is_available() else False,
+        fp16=False,
+        bf16=True,
         save_total_limit=2,
         gradient_checkpointing=True, # This setting theoretically reduces VRAM usage by 60%.
     )
@@ -143,7 +154,8 @@ def main():
         model=model_wrapper,
         args=training_args,
         train_dataset=train_ds,
-        data_collator=data_collator
+        data_collator=data_collator,
+        callbacks=trainer_callbacks
     )
 
     logger.info("Starting Training Loop...")

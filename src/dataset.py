@@ -16,7 +16,6 @@ class ChatterboxDataset(Dataset):
         self.cfg = config
         self.preprocessed_dir = config.preprocessed_dir
         
-        # List only files with .pt extension
         if not os.path.exists(self.preprocessed_dir):
             raise FileNotFoundError(f"Preprocessing folder not found: {self.preprocessed_dir}.")
             
@@ -53,7 +52,6 @@ class ChatterboxDataset(Dataset):
             eot = torch.tensor([self.eot_token], dtype=torch.long)
             text_tokens = torch.cat([sot, text_tokens, eot])
 
-            # 2. Speech Tokens
             speech_tokens = data["speech_tokens"]
             if speech_tokens.size(0) > self.cfg.max_speech_len:
                 speech_tokens = speech_tokens[:self.cfg.max_speech_len]
@@ -84,7 +82,7 @@ def data_collator(batch):
 
     speaker_embs = torch.stack([x["speaker_emb"] for x in batch])
 
-    # Lengths (Required for masking)
+    # Lengths
     text_lens = torch.tensor([len(x["text_tokens"]) for x in batch], dtype=torch.long)
     speech_lens = torch.tensor([len(x["speech_tokens"]) for x in batch], dtype=torch.long)
 

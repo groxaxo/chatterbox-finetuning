@@ -8,6 +8,7 @@ class TrainConfig:
     
     # Path to your metadata CSV (Format: ID|RawText|NormText)
     csv_path: str = "./MyTTSDataset/metadata.csv"
+    metadata_path: str = "./metadata.json"
     
     # Directory containing WAV files
     wav_dir: str = "./MyTTSDataset/wavs"
@@ -18,11 +19,17 @@ class TrainConfig:
     
     # Output directory for the finetuned model
     output_dir: str = "./chatterbox_output"
+    
+    is_inference = False
+    inference_prompt_path: str = "./speaker_reference/en_f1.flac"
+    inference_test_text: str = "Merhaba, sesimi geliştirmem oldukça uzun zaman aldı ve şimdi sahip olduğuma göre, sessiz kalmayacağım."
+
 
     ljspeech = True # Set True if the dataset format is ljspeech, and False if it's file-based.
+    json_format = False # Set True if the dataset format is json, and False if it's file-based or ljspeech.
     preprocess = True # If you've already done preprocessing once, set it to false.
     
-    is_turbo: bool = True # Set True if you're training Turbo, False if you're training Normal.
+    is_turbo: bool = False # Set True if you're training Turbo, False if you're training Normal.
 
     # --- Vocabulary ---
     # The size of the NEW vocabulary (from tokenizer.json)

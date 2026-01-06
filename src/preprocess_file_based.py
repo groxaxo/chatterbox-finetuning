@@ -103,7 +103,7 @@ def preprocess_dataset_file_based(config, tts_engine: ChatterboxTTS):
             # Tokenizer
             if config.is_turbo:
                 token_output = tts_engine.tokenizer(clean_text, return_tensors="pt")
-                text_tokens = token_output.input_ids[0]
+                text_tokens = token_output.input_ids[0].cpu()
             
             else:
                 text_tokens = tts_engine.tokenizer.text_to_tokens(clean_text).squeeze(0).cpu()

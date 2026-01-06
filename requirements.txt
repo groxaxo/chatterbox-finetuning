@@ -15,3 +15,4 @@ tensorboard
 omegaconf
 hf_transfer
 pyloudnorm
+gdown
