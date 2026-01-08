@@ -153,8 +153,6 @@ class ChatterboxTurboTTS:
         hp.speech_cond_prompt_len = 375
         hp.use_perceiver_resampler = False
         hp.emotion_adv = False
-        # Set proper EOS token for GPT-2 tokenizer
-        hp.stop_text_token = 50256  # GPT-2 EOS token
 
         t3 = T3(hp)
         t3_state = load_file(ckpt_dir / "t3_turbo_v1.safetensors")
@@ -176,6 +174,9 @@ class ChatterboxTurboTTS:
             tokenizer.pad_token = tokenizer.eos_token
         #if len(tokenizer) != 50276:
         #    print(f"WARNING: Tokenizer len {len(tokenizer)} != 50276")
+        
+        # Set proper EOS token for GPT-2 tokenizer (after tokenizer is loaded)
+        hp.stop_text_token = tokenizer.eos_token_id
 
         conds = None
         builtin_voice = ckpt_dir / "conds.pt"
@@ -277,7 +278,7 @@ class ChatterboxTurboTTS:
         text_tokens = self.tokenizer(text, return_tensors="pt", padding=True, truncation=True, add_special_tokens=False)
         text_tokens = text_tokens.input_ids.to(self.device)
         
-        # Add EOS token at the end (GPT-2's EOS token is 50256)
+        # Add EOS token at the end for proper sequence termination
         eos_token = torch.tensor([[self.tokenizer.eos_token_id]], dtype=torch.long, device=self.device)
         text_tokens = torch.cat([text_tokens, eos_token], dim=1)
 
