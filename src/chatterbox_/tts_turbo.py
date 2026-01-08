@@ -153,6 +153,8 @@ class ChatterboxTurboTTS:
         hp.speech_cond_prompt_len = 375
         hp.use_perceiver_resampler = False
         hp.emotion_adv = False
+        # Set proper EOS token for GPT-2 tokenizer
+        hp.stop_text_token = 50256  # GPT-2 EOS token
 
         t3 = T3(hp)
         t3_state = load_file(ckpt_dir / "t3_turbo_v1.safetensors")
@@ -271,8 +273,13 @@ class ChatterboxTurboTTS:
 
         # Norm and tokenize text
         text = punc_norm(text)
-        text_tokens = self.tokenizer(text, return_tensors="pt", padding=True, truncation=True)
+        # Tokenize without special tokens, then add them manually for consistency with training
+        text_tokens = self.tokenizer(text, return_tensors="pt", padding=True, truncation=True, add_special_tokens=False)
         text_tokens = text_tokens.input_ids.to(self.device)
+        
+        # Add EOS token at the end (GPT-2's EOS token is 50256)
+        eos_token = torch.tensor([[self.tokenizer.eos_token_id]], dtype=torch.long, device=self.device)
+        text_tokens = torch.cat([text_tokens, eos_token], dim=1)
 
         speech_tokens = self.t3.inference_turbo(
             t3_cond=self.conds.t3,

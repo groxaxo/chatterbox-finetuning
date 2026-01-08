@@ -49,7 +49,8 @@ class TrainConfig:
 
     # --- Constraints ---
     start_text_token = 255
-    stop_text_token = 0
+    # For Turbo mode, use GPT-2 EOS token (50256); for Standard mode, use 0
+    stop_text_token = 50256 if is_turbo else 0
     max_text_len: int = 256
     max_speech_len: int = 850   # Truncates very long audio
     prompt_duration: float = 3.0 # Duration for the reference prompt (seconds)

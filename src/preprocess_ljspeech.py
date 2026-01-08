@@ -83,7 +83,8 @@ def preprocess_dataset_ljspeech(config, tts_engine: ChatterboxTTS):
 
             # Tokenizer
             if config.is_turbo:
-                token_output = tts_engine.tokenizer(clean_text, return_tensors="pt")
+                # For turbo mode, tokenize without special tokens and let dataset.py add them
+                token_output = tts_engine.tokenizer(clean_text, return_tensors="pt", add_special_tokens=False)
                 text_tokens = token_output.input_ids[0].cpu()
             
             else:
