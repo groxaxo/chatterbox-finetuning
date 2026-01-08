@@ -44,17 +44,25 @@ If you plan to switch between **Standard Mode** (`is_turbo = False`) and **Turbo
 
 The setup script replaces the token files in place. If you run the setup for Standard mode after setting up for Turbo (or vice versa), the token files will become corrupted and cause errors that are difficult to debug during training.
 
+**Important:** The two modes use different tokenization schemes and end-of-text (EOF) tokens:
+- **Standard Mode**: Uses stop_text_token = 0
+- **Turbo Mode**: Uses stop_text_token = 50256 (GPT-2's EOS token)
+
+This means preprocessed data from one mode is **NOT compatible** with the other mode.
+
 **Correct Workflow for Changing Modes:**
 
-1. **DELETE the entire `pretrained_models` folder.**
+1. **DELETE the entire `pretrained_models` folder AND the preprocessed data folder.**
 
 ```bash
 
 # On Linux or macOS
 rm -rf pretrained_models
+rm -rf MyTTSDataset/preprocess  # or your custom preprocessed_dir path
 
 # On Windows (in Command Prompt)
 rmdir /s /q pretrained_models
+rmdir /s /q MyTTSDataset\preprocess
 ```
 2. **Update** the `src/config.py` file, setting the `is_turbo` flag to your desired new mode and setting preprocess = True if it is False.
 
