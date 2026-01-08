@@ -279,7 +279,8 @@ class ChatterboxTurboTTS:
         text_tokens = text_tokens.input_ids.to(self.device)
         
         # Add EOS token at the end for proper sequence termination
-        eos_token = torch.tensor([[self.tokenizer.eos_token_id]], dtype=torch.long, device=self.device)
+        batch_size = text_tokens.size(0)
+        eos_token = torch.full((batch_size, 1), self.tokenizer.eos_token_id, dtype=torch.long, device=self.device)
         text_tokens = torch.cat([text_tokens, eos_token], dim=1)
 
         speech_tokens = self.t3.inference_turbo(
