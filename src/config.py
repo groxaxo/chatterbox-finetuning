@@ -1,5 +1,9 @@
 from dataclasses import dataclass
 
+# Constants for EOF tokens
+GPT2_EOS_TOKEN_ID = 50256  # GPT-2's end-of-sequence token
+STANDARD_EOF_TOKEN_ID = 0   # Standard mode's end-of-text token
+
 @dataclass
 class TrainConfig:
     # --- Paths ---
@@ -50,8 +54,8 @@ class TrainConfig:
 
     # --- Constraints ---
     start_text_token = 255
-    # For Turbo mode, use GPT-2 EOS token (50256); for Standard mode, use 0
-    # This is automatically set based on is_turbo in __post_init__
+    # EOF token is automatically set based on mode in __post_init__
+    # Turbo mode uses GPT-2 EOS token; Standard mode uses 0
     stop_text_token: int = 0
     max_text_len: int = 256
     max_speech_len: int = 850   # Truncates very long audio
@@ -61,6 +65,6 @@ class TrainConfig:
         """Set mode-dependent values after initialization"""
         # Set EOF token based on mode (always mode-dependent)
         if self.is_turbo:
-            self.stop_text_token = 50256  # GPT-2 EOS token
+            self.stop_text_token = GPT2_EOS_TOKEN_ID
         else:
-            self.stop_text_token = 0
+            self.stop_text_token = STANDARD_EOF_TOKEN_ID
